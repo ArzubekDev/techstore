@@ -1,36 +1,120 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# techstore-front-website
 
-## Getting Started
+Фронтенд на [Next.js](https://nextjs.org/) (App Router): каталог, карточки товаров, storybook-страницы для UI. Стили — SCSS modules, UI — Ant Design.
 
-First, run the development server:
+---
+
+## Технологии
+
+| Слой               | Пакеты                                                               |
+| ------------------ | -------------------------------------------------------------------- |
+| **Фреймворк**      | Next.js 16, React 19, TypeScript                                     |
+| **UI**             | Ant Design, `@ant-design/nextjs-registry`                            |
+| **Стили**          | Sass, CSS modules                                                    |
+| **Данные / формы** | TanStack Query, React Hook Form, Zod                                 |
+| **Утилиты**        | `classnames`, `dayjs`, `usehooks-ts`, Swiper, `isomorphic-dompurify` |
+
+---
+
+## Быстрый старт
+
+**Требования:** Node.js 20+ (рекомендуется LTS).
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Открой [http://localhost:3000](http://localhost:3000) в браузере.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Скрипты
 
-## Learn More
+| Команда         | Назначение                               |
+| --------------- | ---------------------------------------- |
+| `npm run dev`   | Режим разработки с hot reload            |
+| `npm run build` | Production-сборка                        |
+| `npm run start` | Запуск production-сборки (после `build`) |
+| `npm run lint`  | Проверка ESLint                          |
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Структура проекта
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Проект спроектирован по методологии **Feature-Sliced Design (FSD)** в упрощенном формате для обеспечения масштабируемости, строгого разделения зон ответственности и чистоты кода:
 
-## Deploy on Vercel
+- `src/app/` — глобальные настройки приложения: провайдеры (React Query, Theme), глобальные стили, а также корневой роутинг и layout’ы (App Router).
+- `src/pages/` — (опционально/в будущем) или страницы, обернутые в группы роутинга `src/app/(pages)/`, которые собирают интерфейс из готовых виджетов.
+- `src/widgets/` — крупные, самостоятельные блоки интерфейса (композиционные слои).
+  - _Примеры:_ `Header`, `Footer`, `ProductGrid` (сетка товаров), `SidebarCart` (боковая корзина).
+- `src/features/` — интерактивные действия пользователя, несущие бизнес-ценность (то, что запускает CRUD-процессы).
+  - _Примеры:_ `CreateProductForm` (добавление), `DeleteProductButton` (удаление), `EditProductForm` (редактирование), `AddToCartButton` (добавление в корзину).
+- `src/entities/` — бизнес-сущности и работа с ними (модели данных, типы, API-запросы конкретной сущности).
+  - _Примеры:_ `product` (карточка товара `ProductCard`, хуки `useProductsQuery`, типы `TProduct`), `cart` (стейт корзины).
+- `src/shared/` — переиспользуемый инфраструктурный код, не привязанный к бизнес-логике.
+  - `shared/ui/` — собственный UI-Kit (Button, Input, Modal, Loader, Card).
+  - `shared/api/` — конфигурация API-клиента (Fetch инстанс для работы с `crud.elcho.dev`, обработка сетевых ошибок).
+  - `shared/lib/` — вспомогательные утилиты, хелперы, кастомные системные хуки.
+  - `shared/config/` — глобальные константы, пути роутинга (`PATHS`).
+  - `shared/consts/` — глобальные константы приложения (например, лимиты пагинации, маски телефонов, статические значения).
+  - `shared/hooks/` — универсальные хуки общего назначения (например, `useDebounce`, `useLocalStorage`, `useMediaQuery` / `useBreakpoint`, `useHydration`).
+  - `shared/store/` — глобальные клиенты состояния (state managers) общего назначения (например, глобальные диалоговые окна/модалки, стейт уведомлений или настроек).
+  - `shared/theme/` — конфигурация темы оформления (настройки UI-библиотек вроде Ant Design, CSS-переменные, палитра цветов и утилиты стилей).
+  - `shared/types/` — общие TypeScript интерфейсы и типы, которые используются по всему приложению (например, типы для API-ответов пагинации, общие хелперы типов вроде `DeepPartial`).
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Соглашения по именованию
+
+### Файлы и экспорты
+
+| Тип             | Пример файла        | Имя / префикс   |
+| --------------- | ------------------- | --------------- |
+| Компонент       | `TestComponent.tsx` | `TestComponent` |
+| Константы, моки | `testConstants.ts`  | `TEST_CONSTANT` |
+| Утилиты         | `test-utils.ts`     | `testUtils`     |
+| Хуки            | `useTestHook.ts`    | `useTestHook`   |
+| Объекты/конфиг  | `testObject.ts`     | `testObject`    |
+
+### TypeScript
+
+| Сущность      | Пример                            |
+| ------------- | --------------------------------- |
+| Типы          | `TTestType`                       |
+| Интерфейсы    | `ITestInterface`                  |
+| Enum          | `ETestEnum`                       |
+| DTO с бэкенда | `TTestDataDTO` или `ITestDataDTO` |
+
+---
+
+## Разработка
+
+Перед изменениями в логике Next.js полезно сверяться с актуальной документацией в `node_modules/next/dist/docs/` — в проекте зафиксирована версия с отличиями от «классического» Next.js; см. также `AGENTS.md`.
+
+## Архитектурные решения (ADR)
+
+- **Почему Ant Design + SCSS Modules?**
+  Ant Design дает мощную готовую базу компонентов для админ-панелей и CRUD (таблицы, формы, модалки). SCSS Modules используется для кастомизации и стилизации уникальных интерфейсов каталога без конфликта глобальных стилей.
+- **Почему TanStack Query вместо Redux Toolkit?**
+  Проект ориентирован на CRUD-операции с сервером `crud.elcho.dev`. TanStack Query идеально решает задачи кэширования, автоматического ревалидации данных после мутаций (создание/удаление) и обработки состояний загрузки/ошибки "из коробки", исключая необходимость писать тонны бойлерплейта в Redux.
+
+## Поток данных (Data Flow) при CRUD-операциях
+
+Чтобы код оставался чистым и предсказуемым, мы строго следуем однонаправленному потоку данных:
+
+1. **Серверный рендеринг (SSR / Next.js App Router):**
+   - Компонент страницы в `src/app/` (или `src/app/(pages)/`) принимает `searchParams` или `params`.
+   - Запускается префетч данных через TanStack Query на сервере (внутри `shared/api` и `entities/[entity]/api`).
+
+2. **Клиентское состояние (TanStack Query):**
+   - Компоненты в `widgets` или `features` подписываются на кэш через кастомные хуки из `entities` (например, `useProductsQuery`).
+   - Мутации (`useCreateProductMutation` из `entities/product`) отправляют данные на `crud.elcho.dev`.
+
+3. **Связи между слоями (Строгие правила импорта):**
+   - **shared** — чистая логика, ничего не знает о `entities`, `features` или `widgets`.
+   - **entities** — знает только о `shared`. Не может импортировать ничего из `features` или `widgets`.
+   - **features** — может использовать `entities` и `shared`.
+   - **widgets** — собирает `features` и `entities` вместе.
+
+_Нарушение этих правил импорта приведет к ошибкам циклической зависимости._
