@@ -8,6 +8,7 @@
     "build": "next build",
     "build:webpack": "next build --webpack",
     "start": "next start",
+    "format": "prettier --write \"**/*.{ts,tsx,mjs,json,md,scss}\"",
     "lint": "eslint . --cache --cache-location .next/cache/eslint/",
     "lint:fix": "eslint . --fix --cache --cache-location .next/cache/eslint/"
   },

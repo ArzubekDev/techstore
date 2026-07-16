@@ -28,7 +28,10 @@ export default defineConfig([
     rules: {
       'react/jsx-boolean-value': ['error', 'always'],
       // Атрибуты: label="..." вместо label={'...'}
-      'react/jsx-curly-brace-presence': ['error', { props: 'never', children: 'never' }],
+      'react/jsx-curly-brace-presence': [
+        'error',
+        { props: 'never', children: 'never' },
+      ],
     },
   },
 
@@ -42,5 +45,11 @@ export default defineConfig([
 
   eslintPluginPrettierRecommended,
 
-  globalIgnores(['build/**', 'dist/**', 'coverage/**', 'next-env.d.ts', '.next/**']),
+  globalIgnores([
+    'build/**',
+    'dist/**',
+    'coverage/**',
+    'next-env.d.ts',
+    '.next/**',
+  ]),
 ]);
