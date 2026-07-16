@@ -1,0 +1,35 @@
+name: Code Quality Check
+
+on:
+  push:
+    branches: [main, dev]
+  pull_request:
+    branches: [main, dev]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Скачиваем код репозитория на виртуальную машину GitHub
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Устанавливаем Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-size: '20'
+          cache: 'npm' # Кэшируем node_modules для быстрой сборки в следующий раз
+
+      # 3. Устанавливаем зависимости
+      - name: Install dependencies
+        run: npm ci # Быстрая чистая установка для CI-сред
+
+      # 4. Запускаем JS/TS линтер (ESLint)
+      - name: Run ESLint
+        run: npm run lint
+
+      # 5. Запускаем CSS/SCSS линтер (Stylelint)
+      - name: Run Stylelint
+        run: npm run lint:style
