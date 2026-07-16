@@ -1,6 +1,7 @@
-# techstore-front-website
+# tech-store
 
-Фронтенд на [Next.js](https://nextjs.org/) (App Router): каталог, карточки товаров, storybook-страницы для UI. Стили — SCSS modules, UI — Ant Design.
+Pet-проект: мини-маркетплейс на Next.js (App Router). Каталог товаров, карточки, детальные страницы.
+Цель проекта — практика паттернов, которые используются на реальных фронтенд-проектах: FSD-архитектура, серверные компоненты, кэширование запросов, обработка ошибок, типизация DTO.
 
 ---
 
@@ -10,111 +11,83 @@
 | ------------------ | -------------------------------------------------------------------- |
 | **Фреймворк**      | Next.js 16, React 19, TypeScript                                     |
 | **UI**             | Ant Design, `@ant-design/nextjs-registry`                            |
-| **Стили**          | Sass, CSS modules                                                    |
+| **Стили**          | Sass, CSS Modules                                                    |
 | **Данные / формы** | TanStack Query, React Hook Form, Zod                                 |
 | **Утилиты**        | `classnames`, `dayjs`, `usehooks-ts`, Swiper, `isomorphic-dompurify` |
+| **Линтинг**        | ESLint (flat config), Stylelint, Prettier                            |
+| **CI**             | GitHub Actions                                                       |
 
 ---
 
 ## Быстрый старт
 
-**Требования:** Node.js 20+ (рекомендуется LTS).
+**Требования:** Node.js 20+ (LTS).
 
 ```bash
 npm install
 npm run dev
 ```
 
-Открой [http://localhost:3000](http://localhost:3000) в браузере.
+Открой [http://localhost:3000](http://localhost:3000).
 
 ---
 
 ## Скрипты
 
-| Команда         | Назначение                               |
-| --------------- | ---------------------------------------- |
-| `npm run dev`   | Режим разработки с hot reload            |
-| `npm run build` | Production-сборка                        |
-| `npm run start` | Запуск production-сборки (после `build`) |
-| `npm run lint`  | Проверка ESLint                          |
+| Команда                  | Назначение                                    |
+| ------------------------ | --------------------------------------------- |
+| `npm run dev`            | Дев-режим (Turbopack)                         |
+| `npm run dev:webpack`    | Дев-режим на Webpack (для практики/сравнения) |
+| `npm run build`          | Production-сборка                             |
+| `npm run start`          | Запуск production-сборки                      |
+| `npm run lint`           | Проверка ESLint                               |
+| `npm run lint:fix`       | Автофикс ESLint                               |
+| `npm run lint:style`     | Проверка Stylelint                            |
+| `npm run lint:style:fix` | Автофикс Stylelint                            |
+| `npm run format`         | Prettier по всему проекту                     |
 
 ---
 
-## Структура проекта
+## Структура проекта (FSD, упрощённо)
 
-Проект спроектирован по методологии **Feature-Sliced Design (FSD)** в упрощенном формате для обеспечения масштабируемости, строгого разделения зон ответственности и чистоты кода:
+- `src/app/` — роутинг и layout'ы (App Router), провайдеры (React Query, AntD registry), глобальные стили.
+- `src/widgets/` — крупные самостоятельные блоки: `Header`, `Footer`, `ProductGrid`.
+- `src/features/` — пользовательские действия с бизнес-ценностью: `AddToCartButton`, фильтры каталога, поиск.
+- `src/entities/` — бизнес-сущности: `product` (типы, API-запросы, `useProductsQuery`), `cart`.
+- `src/shared/` — переиспользуемая инфраструктура:
+  - `shared/ui/` — свой UI-кит поверх Ant Design.
+  - `shared/api/` — клиент для `https://crud.elcho.dev/` (fetch-обёртка, обработка ошибок).
+  - `shared/lib/` — хелперы, кастомные хуки.
+  - `shared/config/` — константы, пути (`PATHS`).
+  - `shared/types/` — общие типы (пагинация, `TNullable` и т.п.).
 
-- `src/app/` — глобальные настройки приложения: провайдеры (React Query, Theme), глобальные стили, а также корневой роутинг и layout’ы (App Router).
-- `src/pages/` — (опционально/в будущем) или страницы, обернутые в группы роутинга `src/app/(pages)/`, которые собирают интерфейс из готовых виджетов.
-- `src/widgets/` — крупные, самостоятельные блоки интерфейса (композиционные слои).
-  - _Примеры:_ `Header`, `Footer`, `ProductGrid` (сетка товаров), `SidebarCart` (боковая корзина).
-- `src/features/` — интерактивные действия пользователя, несущие бизнес-ценность (то, что запускает CRUD-процессы).
-  - _Примеры:_ `CreateProductForm` (добавление), `DeleteProductButton` (удаление), `EditProductForm` (редактирование), `AddToCartButton` (добавление в корзину).
-- `src/entities/` — бизнес-сущности и работа с ними (модели данных, типы, API-запросы конкретной сущности).
-  - _Примеры:_ `product` (карточка товара `ProductCard`, хуки `useProductsQuery`, типы `TProduct`), `cart` (стейт корзины).
-- `src/shared/` — переиспользуемый инфраструктурный код, не привязанный к бизнес-логике.
-  - `shared/ui/` — собственный UI-Kit (Button, Input, Modal, Loader, Card).
-  - `shared/api/` — конфигурация API-клиента (Fetch инстанс для работы с `crud.elcho.dev`, обработка сетевых ошибок).
-  - `shared/lib/` — вспомогательные утилиты, хелперы, кастомные системные хуки.
-  - `shared/config/` — глобальные константы, пути роутинга (`PATHS`).
-  - `shared/consts/` — глобальные константы приложения (например, лимиты пагинации, маски телефонов, статические значения).
-  - `shared/hooks/` — универсальные хуки общего назначения (например, `useDebounce`, `useLocalStorage`, `useMediaQuery` / `useBreakpoint`, `useHydration`).
-  - `shared/store/` — глобальные клиенты состояния (state managers) общего назначения (например, глобальные диалоговые окна/модалки, стейт уведомлений или настроек).
-  - `shared/theme/` — конфигурация темы оформления (настройки UI-библиотек вроде Ant Design, CSS-переменные, палитра цветов и утилиты стилей).
-  - `shared/types/` — общие TypeScript интерфейсы и типы, которые используются по всему приложению (например, типы для API-ответов пагинации, общие хелперы типов вроде `DeepPartial`).
+Правила импорта: `shared` ничего не знает о верхних слоях; `entities` знает только `shared`; `features` использует `entities` + `shared`; `widgets` собирает всё вместе. Нарушение — риск циклических зависимостей.
 
 ---
 
 ## Соглашения по именованию
 
-### Файлы и экспорты
-
-| Тип             | Пример файла        | Имя / префикс   |
-| --------------- | ------------------- | --------------- |
-| Компонент       | `TestComponent.tsx` | `TestComponent` |
-| Константы, моки | `testConstants.ts`  | `TEST_CONSTANT` |
-| Утилиты         | `test-utils.ts`     | `testUtils`     |
-| Хуки            | `useTestHook.ts`    | `useTestHook`   |
-| Объекты/конфиг  | `testObject.ts`     | `testObject`    |
-
-### TypeScript
-
-| Сущность      | Пример                            |
-| ------------- | --------------------------------- |
-| Типы          | `TTestType`                       |
-| Интерфейсы    | `ITestInterface`                  |
-| Enum          | `ETestEnum`                       |
-| DTO с бэкенда | `TTestDataDTO` или `ITestDataDTO` |
+| Тип             | Пример файла          | Имя / префикс                                      |
+| --------------- | --------------------- | -------------------------------------------------- |
+| Компонент       | `ProductCard.tsx`     | `ProductCard`                                      |
+| Константы, моки | `productConstants.ts` | `PRODUCT_LIMIT`                                    |
+| Утилиты         | `format-price.ts`     | `formatPrice`                                      |
+| Хуки            | `useProductsQuery.ts` | `useProductsQuery`                                 |
+| Типы            | —                     | `TProductDTO`, `IProductFilters`, `EProductStatus` |
 
 ---
 
-## Разработка
+## ADR (архитектурные решения)
 
-Перед изменениями в логике Next.js полезно сверяться с актуальной документацией в `node_modules/next/dist/docs/` — в проекте зафиксирована версия с отличиями от «классического» Next.js; см. также `AGENTS.md`.
-
-## Архитектурные решения (ADR)
-
+- **Почему TanStack Query, а не просто fetch в useEffect?**
+  Кэширование, автоматическая ревалидация, встроенные состояния loading/error без бойлерплейта — важно для практики паттернов, которые реально используются в проде.
+- **Почему dummyjson.com?**
+  Даёт реалистичный REST API (пагинация, фильтры, категории) без необходимости поднимать свой бэкенд — фокус на фронтенд-логике.
 - **Почему Ant Design + SCSS Modules?**
-  Ant Design дает мощную готовую базу компонентов для админ-панелей и CRUD (таблицы, формы, модалки). SCSS Modules используется для кастомизации и стилизации уникальных интерфейсов каталога без конфликта глобальных стилей.
-- **Почему TanStack Query вместо Redux Toolkit?**
-  Проект ориентирован на CRUD-операции с сервером `crud.elcho.dev`. TanStack Query идеально решает задачи кэширования, автоматического ревалидации данных после мутаций (создание/удаление) и обработки состояний загрузки/ошибки "из коробки", исключая необходимость писать тонны бойлерплейта в Redux.
+  AntD закрывает базовые компоненты (таблицы, формы, модалки), SCSS Modules — для кастомной стилизации карточек/каталога без конфликта глобальных стилей.
 
-## Поток данных (Data Flow) при CRUD-операциях
+---
 
-Чтобы код оставался чистым и предсказуемым, мы строго следуем однонаправленному потоку данных:
+## CI
 
-1. **Серверный рендеринг (SSR / Next.js App Router):**
-   - Компонент страницы в `src/app/` (или `src/app/(pages)/`) принимает `searchParams` или `params`.
-   - Запускается префетч данных через TanStack Query на сервере (внутри `shared/api` и `entities/[entity]/api`).
-
-2. **Клиентское состояние (TanStack Query):**
-   - Компоненты в `widgets` или `features` подписываются на кэш через кастомные хуки из `entities` (например, `useProductsQuery`).
-   - Мутации (`useCreateProductMutation` из `entities/product`) отправляют данные на `crud.elcho.dev`.
-
-3. **Связи между слоями (Строгие правила импорта):**
-   - **shared** — чистая логика, ничего не знает о `entities`, `features` или `widgets`.
-   - **entities** — знает только о `shared`. Не может импортировать ничего из `features` или `widgets`.
-   - **features** — может использовать `entities` и `shared`.
-   - **widgets** — собирает `features` и `entities` вместе.
-
-_Нарушение этих правил импорта приведет к ошибкам циклической зависимости._
+GitHub Actions: lint + typecheck + build на каждый PR в `main` (см. `.github/workflows/`).
