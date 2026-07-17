@@ -1,0 +1,126 @@
+// Переменные
+$colorBg: #0b0f19;
+$colorBorder: rgb(255 255 255 / 8%);
+$colorTextMain: #fff;
+$colorTextMuted: #94a3b8;
+$colorPrimary: #3b82f6;
+$colorSecondary: #8b5cf6;
+
+.wrapper {
+  position: relative;
+  max-height: 360px;
+  display: flex;
+  flex-direction: column;
+  padding: 32px 24px;
+  background-color: $colorBg;
+  color: $colorTextMain;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  border-radius: 20px;
+  overflow: hidden;
+
+  @media (width >= 768px) {
+    padding: 48px 64px;
+  }
+}
+
+// Задний фон (Glow Effect)
+.glowBg {
+  position: absolute;
+  top: -50px;
+  right: -50px;
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(
+    circle,
+    rgba($colorPrimary, 0.15) 0%,
+    rgba($colorSecondary, 0.05) 60%,
+    transparent 100%
+  );
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.hero {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  flex: 1;
+}
+
+.heroContent {
+  max-width: 680px;
+}
+
+.title {
+  font-size: 38px;
+  font-weight: 800;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  margin: 0 0 16px;
+}
+
+.gradientText {
+  background: linear-gradient(135deg, #60a5fa 0%, $colorSecondary 100%);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.description {
+  font-size: 15px;
+  line-height: 1.6;
+  color: $colorTextMuted;
+  margin: 0 0 32px;
+
+  @media (width >= 768px) {
+    font-size: 16px;
+  }
+}
+
+// Секция преимуществ
+.benefits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px 32px;
+  padding-top: 24px;
+  border-top: 1px solid $colorBorder;
+}
+
+.benefitItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.benefitIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 3%);
+  border: 1px solid $colorBorder;
+  color: $colorPrimary;
+  flex-shrink: 0;
+
+  // Оптимизация стилизации SVG без лишней вложенности
+  :global(svg) {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.benefitText {
+  font-size: 14px;
+  font-weight: 500;
+  color: $colorTextMuted;
+  white-space: nowrap;
+}
