@@ -1,0 +1,42 @@
+$colorBg: #0b0f19;
+$colorCardBg: rgb(255 255 255 / 3%);
+$colorBorder: rgb(255 255 255 / 8%);
+$colorTextMain: #fff;
+$colorTextMuted: #94a3b8;
+$colorPrimary: #3b82f6; // neon blue
+$colorSecondary: #8b5cf6; // violet/purple
+
+.header {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 80px;
+  border-bottom: 1px solid $colorBorder;
+}
+
+.logoContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logoIcon {
+  width: 28px;
+  height: 28px;
+  color: $colorPrimary;
+  filter: drop-shadow(0 0 8px rgba($colorPrimary, 0.6));
+}
+
+.logoText {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -0.5px;
+}
+
+.logoHighlight {
+  background: linear-gradient(135deg, $colorPrimary, $colorSecondary);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}

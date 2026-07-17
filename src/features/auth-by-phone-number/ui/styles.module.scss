@@ -1,0 +1,150 @@
+// 1. Переменные в camelCase
+$colorPrimary: #3b82f6;
+$colorSecondary: #8b5cf6;
+$colorDarkBg: #0b0f19;
+$colorBorder: rgb(255 255 255 / 8%);
+$colorTextMuted: #94a3b8;
+
+// 2. Локальные стили
+.authButton {
+  background: linear-gradient(
+    135deg,
+    $colorPrimary,
+    $colorSecondary
+  ) !important;
+  border: none !important;
+  font-weight: 600 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 0 15px rgba($colorPrimary, 0.4);
+  transition: all 0.3s ease-in-out !important;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 0 25px rgba($colorSecondary, 0.6);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.modalTitle {
+  display: flex;
+  gap: 6px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.titleHighlight {
+  background: linear-gradient(135deg, $colorPrimary, $colorSecondary);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.modalBody {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-top: 12px;
+}
+
+.modalDescription {
+  font-size: 14px;
+  color: $colorTextMuted;
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.inputLabel {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: $colorTextMuted;
+}
+
+.inputField {
+  background-color: rgb(255 255 255 / 3%) !important;
+  border: 1px solid $colorBorder !important;
+  color: #fff !important;
+  border-radius: 8px !important;
+  transition: all 0.2s ease-in-out !important;
+
+  &::placeholder {
+    color: rgb(255 255 255 / 20%) !important;
+  }
+
+  &:focus,
+  &:hover {
+    border-color: $colorPrimary !important;
+    background-color: rgb(255 255 255 / 5%) !important;
+    box-shadow: 0 0 8px rgba($colorPrimary, 0.2) !important;
+  }
+}
+
+// 3. Кастомизация внешних компонентов Ant Design в CSS Modules
+/* stylelint-disable selector-class-pattern */
+
+// Оборачиваем селекторы так, чтобы Turbopack однозначно понимал, что к чему относится
+.customModal :global(.ant-modal-content) {
+  background-color: #111827 !important;
+  border: 1px solid $colorBorder;
+  border-radius: 16px;
+  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 50%);
+}
+
+.customModal :global(.ant-modal-header) {
+  background-color: transparent !important;
+  border-bottom: 1px solid $colorBorder;
+  padding-bottom: 16px;
+}
+
+.customModal :global(.ant-modal-close) {
+  color: $colorTextMuted !important;
+
+  &:hover {
+    color: #fff !important;
+  }
+}
+
+.customModal :global(.ant-modal-footer) {
+  border-top: 1px solid $colorBorder;
+  padding-top: 16px;
+  margin-top: 24px;
+}
+
+.customModal :global(.ant-btn-default) {
+  background: transparent !important;
+  border: 1px solid $colorBorder !important;
+  color: $colorTextMuted !important;
+  border-radius: 8px;
+
+  &:hover {
+    color: #fff !important;
+    border-color: #fff !important;
+  }
+}
+
+.customModal :global(.ant-btn-primary) {
+  background: linear-gradient(
+    135deg,
+    $colorPrimary,
+    $colorSecondary
+  ) !important;
+  border: none !important;
+  border-radius: 8px;
+  font-weight: 600;
+
+  &:hover {
+    opacity: 0.9;
+  }
+}
+
+/* stylelint-enable selector-class-pattern */

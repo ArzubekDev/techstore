@@ -1,9 +1,9 @@
 'use client';
-
-import { type TProductDTO } from '@/entities/products/model/types';
-import { createResourceClient } from '@/shared/api/instance.api';
-import { type TPaginatedResponse } from '@/shared/types/pagination';
 import { useEffect, useState } from 'react';
+
+import { createResourceClient } from '@/shared/api/instance.api';
+import { type TProductDTO } from '@/entities/products/model/types';
+import { type TPaginatedResponse } from '@/shared/types/pagination';
 
 const productApi = createResourceClient('techstore');
 
