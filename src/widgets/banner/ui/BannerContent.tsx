@@ -1,6 +1,7 @@
 import { IconCheckCircle, IconLevel, IconTV } from '@/shared/ui/icons';
-import styles from './styles.module.scss';
 import { Flex } from '@/shared/ui/layout';
+
+import styles from './styles.module.scss';
 
 export const BannerContent = () => {
   return (

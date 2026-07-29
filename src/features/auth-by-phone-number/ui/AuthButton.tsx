@@ -1,41 +1,114 @@
-// src/features/auth-by-phone/ui/AuthButton.tsx
 'use client';
 
 import { useState } from 'react';
-import { Button, Modal, Input, message } from 'antd';
+import { auth } from '@/shared/config/firebase';
+import { Button, Input, message, Modal } from 'antd';
+import {
+  RecaptchaVerifier,
+  signInWithPhoneNumber,
+  type ConfirmationResult,
+} from 'firebase/auth';
+
 import styles from './styles.module.scss';
 
 export const AuthButton = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [phone, setPhone] = useState('');
   const [code, setCode] = useState('');
+  const [step, setStep] = useState<'phone' | 'code'>('phone');
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = () => {
-    if (!phone || phone.trim().length < 6) {
-      message.error('Введите корректный номер телефона');
-      return;
-    }
-    if (code.length !== 6) {
-      message.error('Код подтверждения должен состоять из 6 цифр');
+  const [confirmationResult, setConfirmationResult] =
+    useState<ConfirmationResult | null>(null);
+
+  const resetState = () => {
+    setIsOpen(false);
+    setStep('phone');
+    setPhone('');
+    setCode('');
+    setConfirmationResult(null);
+  };
+
+  const handleSendCode = async () => {
+    if (!phone || phone.trim().length < 9) {
+      message.error(
+        'Введите корректный номер телефона (например, +996555010203)',
+      );
       return;
     }
 
     setIsLoading(true);
 
-    // Имитируем запрос к API (KISS / Имитация задержки сети)
-    setTimeout(() => {
+    try {
+      if (!window.recaptchaVerifier) {
+        window.recaptchaVerifier = new RecaptchaVerifier(
+          auth,
+          'recaptcha-container',
+          {
+            size: 'invisible',
+          },
+        );
+      }
+
+      const appVerifier = window.recaptchaVerifier;
+      const confirmation = await signInWithPhoneNumber(
+        auth,
+        phone,
+        appVerifier,
+      );
+
+      setConfirmationResult(confirmation);
+      setStep('code');
+      message.success('Код подтверждения отправлен!');
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(error);
+        message.error(
+          error.message || 'Ошибка при отправке SMS. Проверьте формат номера.',
+        );
+      }
+
+      // Сброс рекапчи в случае ошибки
+      if (window.recaptchaVerifier) {
+        window.recaptchaVerifier.clear();
+        window.recaptchaVerifier = undefined;
+      }
+    } finally {
       setIsLoading(false);
-      setIsOpen(false);
-      message.success('Успешный вход в систему!');
-      // Сбрасываем форму
-      setPhone('');
-      setCode('');
-    }, 1000);
+    }
+  };
+
+  // 2. Шаг 2: Подтвердить код из SMS
+  const handleVerifyCode = async () => {
+    if (code.length !== 6) {
+      message.error('Код подтверждения должен состоять из 6 цифр');
+      return;
+    }
+
+    if (!confirmationResult) {
+      message.error('Сессия истекла. Запросите код заново.');
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const userCredential = await confirmationResult.confirm(code);
+      message.success(
+        `Успешный вход! С возвращением, ${userCredential.user.phoneNumber}`,
+      );
+      resetState();
+    } catch (error) {
+      console.error(error);
+      message.error('Неверный код подтверждения');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <>
+      <div id="recaptcha-container"></div>
       <Button
         type="primary"
         size="large"
@@ -53,43 +126,48 @@ export const AuthButton = () => {
           </div>
         }
         open={isOpen}
-        onCancel={() => setIsOpen(false)}
-        onOk={handleLogin}
+        onCancel={resetState}
+        onOk={step === 'phone' ? handleSendCode : handleVerifyCode}
         confirmLoading={isLoading}
-        okText="Подтвердить"
+        okText={step === 'phone' ? 'Отправить код' : 'Подтвердить'}
         cancelText="Отмена"
-        // Специальные пропсы Ant Design для стилизации внутреннего содержимого
         className={styles.customModal}
         centered={true}
       >
         <div className={styles.modalBody}>
-          <p className={styles.modalDescription}>
-            Введите номер телефона и любой 6-значный код для демонстрационного
-            входа.
-          </p>
-
-          <div className={styles.inputGroup}>
-            <label className={styles.inputLabel}>Номер телефона</label>
-            <Input
-              placeholder="+996 (555) 01-02-03"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              className={styles.inputField}
-              size="large"
-            />
-          </div>
-
-          <div className={styles.inputGroup}>
-            <label className={styles.inputLabel}>Код подтверждения</label>
-            <Input
-              placeholder="0 0 0 0 0 0"
-              maxLength={6}
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-              className={styles.inputField}
-              size="large"
-            />
-          </div>
+          {step === 'phone' ? (
+            <div className={styles.inputGroup}>
+              <label className={styles.inputLabel}>
+                Номер телефона (с кодом страны)
+              </label>
+              <Input
+                placeholder="+996555010203"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                className={styles.inputField}
+                size="large"
+              />
+            </div>
+          ) : (
+            <div className={styles.inputGroup}>
+              <label className={styles.inputLabel}>Код из SMS</label>
+              <Input
+                placeholder="0 0 0 0 0 0"
+                maxLength={6}
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                className={styles.inputField}
+                size="large"
+              />
+              <Button
+                type="link"
+                onClick={() => setStep('phone')}
+                style={{ paddingLeft: 0, marginTop: 8 }}
+              >
+                Изменить номер телефона
+              </Button>
+            </div>
+          )}
         </div>
       </Modal>
     </>

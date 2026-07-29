@@ -1,0 +1,46 @@
+.section {
+  display: flex;
+  flex-direction: column;
+}
+
+.sectionTitle {
+  font-size: 22px;
+  font-weight: 700;
+  color: #1f1f1f;
+  margin: 0 0 4px;
+}
+
+.sectionSubtitle {
+  font-size: 14px;
+  color: #8c8c8c;
+  margin: 0 0 24px;
+}
+
+// Формы
+.formGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  margin-bottom: 28px;
+
+  @media (width <= 576px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  label {
+    font-size: 14px;
+    font-weight: 500;
+    color: #262626;
+  }
+}
+
+.actionRow {
+  display: flex;
+  justify-content: flex-end;
+}
