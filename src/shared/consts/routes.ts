@@ -10,8 +10,9 @@ export const ROUTE = {
     root: '/profile',
     settings: '/settings',
     orders: '/orders',
-    myStore: '/my-store',
+    createStore: '/create-store',
     notifications: '/notifications',
+    createProduct: '/create-product',
     orderDetail: (id: string | number) => `/orders/${id}`,
   },
 
