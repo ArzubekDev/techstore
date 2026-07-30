@@ -1,6 +1,7 @@
 import { ROUTE } from '@/shared/consts/routes';
 import {
   BellOutlined,
+  PlusOutlined,
   SettingOutlined,
   ShopOutlined,
   UserOutlined,
@@ -13,9 +14,9 @@ export const PROFILE_TABS = [
     path: ROUTE.profile.root,
   },
   {
-    label: 'Мой магазин',
+    label: 'Создать магазин',
     icon: <ShopOutlined />,
-    path: ROUTE.profile.myStore,
+    path: ROUTE.profile.createStore,
   },
   {
     label: 'Уведомления',
@@ -26,5 +27,10 @@ export const PROFILE_TABS = [
     label: 'Настройки',
     icon: <SettingOutlined />,
     path: ROUTE.profile.settings,
+  },
+  {
+    label: 'Создать продукт',
+    icon: <PlusOutlined />,
+    path: ROUTE.profile.createProduct,
   },
 ];
